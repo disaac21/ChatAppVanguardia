@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StatusBar, Pressable, Alert } from 'react-native';
+import React from 'react';
+import { View, Text, Image, TextInput, TouchableOpacity, StatusBar } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -7,6 +7,7 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 
 // Reusable Button Component
@@ -37,8 +38,9 @@ const Button = ({ icon, text, color = '#a4a2a7', onPress }) => (
     </TouchableOpacity>
 );
 
+
 // InputField Component
-const InputField = ({ icon, placeholder, secureTextEntry = false, value, onChangeText }) => (
+const InputField = ({ icon, placeholder, secureTextEntry = false }) => (
     <View style={{
         height: hp(7),
         flexDirection: 'row',
@@ -55,8 +57,6 @@ const InputField = ({ icon, placeholder, secureTextEntry = false, value, onChang
             placeholder={placeholder}
             placeholderTextColor="gray"
             secureTextEntry={secureTextEntry}
-            value={value}
-            onChangeText={onChangeText}
         />
     </View>
 );
@@ -72,86 +72,58 @@ const LogoSection = () => (
     </View>
 );
 
-// Input Fields and Forgot Password Section Component
-const InputFieldsSection = ({ navigation, email, setEmail, password, setPassword }) => (
+// Input Fields Section Component
+const InputFieldsSection = ({ navigation }) => (
     <View>
         <View>
-            <InputField 
-                icon={<Octicons name="mail" size={hp(2.7)} color="gray" />} 
-                placeholder="Email address" 
-                value={email}
-                onChangeText={setEmail}
-            />
+            <InputField icon={<FontAwesome6 name="user" size={hp(2.7)} color="gray" />} placeholder="Nombre" />
             <View style={{ marginTop: hp(2) }}>
-                <InputField 
-                    icon={<Octicons name="lock" size={hp(2.7)} color="gray" />} 
-                    placeholder="Password" 
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                />
+                <InputField icon={<Octicons name="mail" size={hp(2.7)} color="gray" />} placeholder="Correo Electrónico" />
             </View>
-        </View>
-        <View style={{ alignItems: 'stretch' }}>
-            <Pressable onPress={() => Alert.alert('Reset Password')}>
-                <Text style={{ fontSize: hp(1.5), fontWeight: '500', textAlign: 'left', color: '#757575', marginTop: hp(2) }}>
-                    Forgot password?
-                </Text>
-            </Pressable>
-            
-            <View style={{ alignItems: 'flex-end'}}>
-                <TouchableOpacity
-                    style={{ height: hp(5), width: wp(20), backgroundColor: '#a4a2a7', borderRadius: 17, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}
-                    onPress={() => Alert.alert('Input Data', `Email: ${email}\nPassword: ${password}`)}
-                    accessibilityLabel={"Sign In"}
-                >
-                    <Entypo name="arrow-right" size={30} color="white"/>
-                </TouchableOpacity>
+            <View style={{ marginTop: hp(2) }}>
+                <InputField icon={<Feather name="at-sign" size={hp(2.7)} color="gray" />} placeholder="Username" />
+            </View>
+            <View style={{ marginTop: hp(2) }}>
+                <InputField icon={<Octicons name="lock" size={hp(2.7)} color="gray" />} placeholder="Password" secureTextEntry />
             </View>
         </View>
     </View>
 );
 
 // Social Media Sign-In Section Component
-const SocialSignInSection = ({ navigation, email, password }) => (
-    <View style={{ paddingTop: hp(10) }}>
+const SocialSignInSection = ({ navigation }) => (
+    <View style={{ paddingTop: hp(4) }}>
         <Button
             icon={<FontAwesome6 name="user-large" size={hp(2.7)} color="white" />}
+            // icon={<FontAwesome6 name="user" size={hp(2.7)} color="white" />}
+            // icon={<FontAwesome5 name="user-alt" size={hp(2.7)} color="white" />}
             text="Crear Cuenta"
-            onPress={() => {navigation.navigate('SignIn')}}
+            onPress={() => alert('Create Account')}
         />
         <Button
             icon={<Fontisto name="google" size={hp(2.7)} color="white" />}
-            text="Sign In con Google"
-            onPress={() => Alert.alert('Google Sign In')}
+            text="Registrarse con Google"
+            onPress={() => alert('Google Sign Up')}
         />
         <Button
             icon={<FontAwesome5 name="facebook" size={hp(2.7)} color="white" />}
-            text="Sign In con Facebook"
-            onPress={() => Alert.alert('Facebook Sign In')}
+            text="Registrarse con Facebook"
+            onPress={() => alert('Facebook Sign Up')}
         />
     </View>    
 );
 
-export default function LogIn() {
+export default function SignIn() {
     const navigation = useNavigation();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
 
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             <StatusBar barStyle="default" />
             <View style={{ paddingTop: hp(5), paddingHorizontal: wp(5) }}>
                 <LogoSection />
-                <View style={{ paddingHorizontal: wp(12.5), marginTop: hp(2) }}>
-                    <InputFieldsSection 
-                        navigation={navigation} 
-                        email={email} 
-                        setEmail={setEmail} 
-                        password={password} 
-                        setPassword={setPassword} 
-                    />
-                    <SocialSignInSection navigation={navigation} />
+                <View style={{ paddingHorizontal: wp(12.5), marginTop: hp(4) }}>
+                    <InputFieldsSection navigation={navigation} />
+                    <SocialSignInSection navigation={navigation}/>
                 </View>
             </View>
         </View>
