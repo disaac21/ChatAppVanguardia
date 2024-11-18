@@ -102,7 +102,7 @@ const InputFieldsSection = ({ navigation, email, setEmail, password, setPassword
             <View style={{ alignItems: 'flex-end'}}>
                 <TouchableOpacity
                     style={{ height: hp(5), width: wp(20), backgroundColor: '#a4a2a7', borderRadius: 17, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}
-                    onPress={() => Alert.alert('Input Data', `Email: ${email}\nPassword: ${password}`)}
+                    onPress={() => {Alert.alert('Input Data', `Email: ${email}\nPassword: ${password}`); navigation.navigate('MainChat')}}
                     accessibilityLabel={"Sign In"}
                 >
                     <Entypo name="arrow-right" size={30} color="white"/>
