@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, StatusBar, Pressable, Alert } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -78,14 +76,14 @@ const InputFieldsSection = ({ navigation, email, setEmail, password, setPassword
         <View>
             <InputField 
                 icon={<Octicons name="mail" size={hp(2.7)} color="gray" />} 
-                placeholder="Email address" 
+                placeholder="Correo Electrónico" 
                 value={email}
                 onChangeText={setEmail}
             />
             <View style={{ marginTop: hp(2) }}>
                 <InputField 
                     icon={<Octicons name="lock" size={hp(2.7)} color="gray" />} 
-                    placeholder="Password" 
+                    placeholder="Contraseña" 
                     secureTextEntry
                     value={password}
                     onChangeText={setPassword}
@@ -116,7 +114,7 @@ const InputFieldsSection = ({ navigation, email, setEmail, password, setPassword
 const SocialSignInSection = ({ navigation, email, password }) => (
     <View style={{ paddingTop: hp(10) }}>
         <Button
-            icon={<FontAwesome6 name="user-large" size={hp(2.7)} color="white" />}
+            icon={<FontAwesome5 name="user-alt" size={hp(2.7)} color="white" />}
             text="Crear Cuenta"
             onPress={() => {navigation.navigate('SignIn')}}
         />

@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Octicons from 'react-native-vector-icons/Octicons';
-import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 
@@ -40,26 +38,26 @@ const Button = ({ icon, text, color = '#a4a2a7', onPress }) => (
 
 // InputField Component
 const InputField = ({ icon, placeholder, secureTextEntry = false, value, onChangeText }) => (
-  <View style={{
-      height: hp(7),
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: '#ffffff',
-      borderColor: '#4a4a4a',
-      borderWidth: 1,
-      borderRadius: 5,
-      paddingHorizontal: wp(4),
-  }}>
-      {icon}
-      <TextInput
-          style={{ flex: 1, marginLeft: wp(2), fontWeight: '500', color: '#4a4a4a' }}
-          placeholder={placeholder}
-          placeholderTextColor="gray"
-          secureTextEntry={secureTextEntry}
-          value={value}
-          onChangeText={onChangeText}
-      />
-  </View>
+    <View style={{
+        height: hp(7),
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
+        borderColor: '#4a4a4a',
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: wp(4),
+    }}>
+        {icon}
+        <TextInput
+            style={{ flex: 1, marginLeft: wp(2), fontWeight: '500', color: '#4a4a4a' }}
+            placeholder={placeholder}
+            placeholderTextColor="gray"
+            secureTextEntry={secureTextEntry}
+            value={value}
+            onChangeText={onChangeText}
+        />
+    </View>
 );
 
 // Logo Section Component
@@ -77,7 +75,7 @@ const LogoSection = () => (
 const InputFieldsSection = ({ navigation, name, setName, email, setEmail, username, setUsername, password, setPassword }) => (
     <View>
         <View>
-            <InputField icon={<FontAwesome6 name="user" size={hp(2.7)} color="gray" />} placeholder="Nombre" value={name} onChangeText={setName} />
+            <InputField icon={<Feather name="user" size={hp(2.7)} color="gray" />} placeholder="Nombre" value={name} onChangeText={setName} />
             <View style={{ marginTop: hp(2) }}>
                 <InputField icon={<Octicons name="mail" size={hp(2.7)} color="gray" />} placeholder="Correo Electrónico" value={email} onChangeText={setEmail}/>
             </View>
@@ -85,7 +83,7 @@ const InputFieldsSection = ({ navigation, name, setName, email, setEmail, userna
                 <InputField icon={<Feather name="at-sign" size={hp(2.7)} color="gray" />} placeholder="Username" value={username} onChangeText={setUsername}/>
             </View>
             <View style={{ marginTop: hp(2) }}>
-                <InputField icon={<Octicons name="lock" size={hp(2.7)} color="gray" />} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword}/>
+                <InputField icon={<Octicons name="lock" size={hp(2.7)} color="gray" />} placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword}/>
             </View>
         </View>
     </View>
@@ -95,9 +93,8 @@ const InputFieldsSection = ({ navigation, name, setName, email, setEmail, userna
 const SocialSignInSection = ({ navigation, name, email, username, password }) => (
     <View style={{ paddingTop: hp(4) }}>
         <Button
-            icon={<FontAwesome6 name="user-large" size={hp(2.7)} color="white" />}
             // icon={<FontAwesome6 name="user" size={hp(2.7)} color="white" />}
-            // icon={<FontAwesome5 name="user-alt" size={hp(2.7)} color="white" />}
+            icon={<FontAwesome5 name="user-alt" size={hp(2.7)} color="white" />}
             text="Crear Cuenta"
             onPress={() => {Alert.alert('Input Data', `Name: ${name}\nEmail: ${email}\nUsername: ${username}\nPassword: ${password}`); navigation.navigate('MainChat')}}
                     accessibilityLabel={"Sign In"}
