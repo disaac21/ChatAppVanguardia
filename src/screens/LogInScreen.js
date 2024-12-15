@@ -72,18 +72,41 @@ const LogoSection = () => (
 
 // Input Fields and Forgot Password Section Component
 const InputFieldsSection = ({ navigation, email, setEmail, password, setPassword }) => (
+    const handleLogin = async () => {
+        try {
+            const response = await fetch('https://backenddav.onrender.com/iniciarSesion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const result = await response.text();
+
+            if (response.ok) {
+                Alert.alert('Inicio de sesión exitoso', result);
+                navigation.navigate('MainChat');
+            } else {
+                Alert.alert('Error', result);
+            }
+        } catch (error) {
+            Alert.alert('Error', 'No se pudo conectar con el servidor. Por favor, intenta más tarde.');
+            console.error(error);
+        }
+    };
     <View>
         <View>
-            <InputField 
-                icon={<Octicons name="mail" size={hp(2.7)} color="gray" />} 
-                placeholder="Correo Electrónico" 
+            <InputField
+                icon={<Octicons name="mail" size={hp(2.7)} color="gray" />}
+                placeholder="Correo Electrónico"
                 value={email}
                 onChangeText={setEmail}
             />
             <View style={{ marginTop: hp(2) }}>
-                <InputField 
-                    icon={<Octicons name="lock" size={hp(2.7)} color="gray" />} 
-                    placeholder="Contraseña" 
+                <InputField
+                    icon={<Octicons name="lock" size={hp(2.7)} color="gray" />}
+                    placeholder="Contraseña"
                     secureTextEntry
                     value={password}
                     onChangeText={setPassword}
@@ -96,11 +119,11 @@ const InputFieldsSection = ({ navigation, email, setEmail, password, setPassword
                     Forgot password?
                 </Text>
             </Pressable>
-            
+
             <View style={{ alignItems: 'flex-end'}}>
                 <TouchableOpacity
                     style={{ height: hp(5), width: wp(20), backgroundColor: '#a4a2a7', borderRadius: 17, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}
-                    onPress={() => {Alert.alert('Input Data', `Email: ${email}\nPassword: ${password}`); navigation.navigate('MainChat')}}
+                    onPress={handleLogin}
                     accessibilityLabel={"Sign In"}
                 >
                     <Entypo name="arrow-right" size={30} color="white"/>
