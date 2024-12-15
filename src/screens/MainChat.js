@@ -3,10 +3,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { useFocusEffect } from '@react-navigation/native';
+import axios from 'axios';
 
 export default function MainChat({ navigation }) {
     const [messages, setMessages] = useState([]);
-    const [userMessages, setUserMessages] = useState([]);
+    const [userMessages, setUserMessages] = useState([]); 
 
     useEffect(() => {
         setMessages([
@@ -31,23 +32,22 @@ export default function MainChat({ navigation }) {
         const userMessage = messages[0]?.text;
 
         if (userMessage) {
-            setUserMessages(prev => [...prev, userMessage]); // Guardar el mensaje en el historial
+            setUserMessages(prev => [...prev, userMessage]); 
 
             try {
-                const response = await fetch('http://localhost:3002/webhook', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: userMessage }),
-                });
+                const response = await axios.post(
+                    'https://backenddav.onrender.com/webhook',
+                    { message: userMessage }
+                );
 
-                const result = await response.json();
+                const { fulfillmentText } = response.data;
 
-                if (response.ok && result.fulfillmentText) {
+                if (fulfillmentText) {
                     setMessages(previousMessages =>
                         GiftedChat.append(previousMessages, [
                             {
-                                _id: Math.random().toString(),
-                                text: result.fulfillmentText,
+                                _id: Math.random().toString(), 
+                                text: fulfillmentText,
                                 createdAt: new Date(),
                                 user: {
                                     _id: 2,
@@ -69,41 +69,36 @@ export default function MainChat({ navigation }) {
 
     const handleBackButtonPress = useCallback(async () => {
         try {
-            const response = await fetch('http://localhost:3002/analyze-sentiment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: userMessages }),
-            });
+            const response = await axios.post(
+                'https://backenddav.onrender.com/analyze-sentiment',
+                { messages: userMessages }
+            );
 
-            const result = await response.json();
+            const { totalMessages, positivePercentage, negativePercentage, neutralPercentage } = response.data;
 
-            if (response.ok) {
-                Alert.alert(
-                    'Análisis de Sentimiento',
-                    `Mensajes analizados: ${result.totalMessages}\n\n` +
-                        `Positivo: ${result.positivePercentage}%\n` +
-                        `Negativo: ${result.negativePercentage}%\n` +
-                        `Neutral: ${result.neutralPercentage}%`,
-                    [
-                        {
-                            text: 'Cerrar Chat',
-                            onPress: () => navigation.navigate('LogIn'), // Navegar de vuelta
-                        },
-                    ],
-                );
-            } else {
-                Alert.alert('Error', 'No se pudo analizar los mensajes.');
-            }
+            Alert.alert(
+                'Análisis de Sentimiento',
+                `Mensajes analizados: ${totalMessages}\n\n` +
+                    `Positivo: ${positivePercentage}%\n` +
+                    `Negativo: ${negativePercentage}%\n` +
+                    `Neutral: ${neutralPercentage}%`,
+                [
+                    {
+                        text: 'Cerrar Chat',
+                        onPress: () => navigation.navigate('LogIn'), 
+                    },
+                ],
+            );
         } catch (error) {
             console.error('Error al analizar los mensajes:', error);
-            Alert.alert('Error', 'No se pudo conectar con el servidor.');
+            Alert.alert('Error', 'No se pudo analizar los mensajes.');
         }
     }, [userMessages, navigation]);
 
     useFocusEffect(
         useCallback(() => {
             const unsubscribe = navigation.addListener('beforeRemove', e => {
-                e.preventDefault();
+                e.preventDefault(); 
                 handleBackButtonPress();
             });
 
