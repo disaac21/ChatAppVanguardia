@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "374231299348",
+    "project_id": "usersvanguardia",
+    "storage_bucket": "usersvanguardia.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:374231299348:android:cd62bd3fcab03f5fa3be01",
+        "android_client_info": {
+          "package_name": "com.chatappvanguardia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "374231299348-i503v21vdu5pbsbu5b7q7rthau9go9a1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chatappvanguardia",
+            "certificate_hash": "4f3ec24ccba9f777684de5126993319b3b0db1fb"
+          }
+        },
+        {
+          "client_id": "374231299348-v4ianurre127pud2n8sc33oulkvdr9ms.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWTOyeJhm9tvaQ_yIw8fhhjISOMn8Uxf8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "374231299348-v4ianurre127pud2n8sc33oulkvdr9ms.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

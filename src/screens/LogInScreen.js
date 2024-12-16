@@ -6,6 +6,41 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
+
+GoogleSignin.configure({
+  webClientId: '374231299348-v4ianurre127pud2n8sc33oulkvdr9ms.apps.googleusercontent.com',
+});
+
+async function onGoogleButtonPress() {
+    try {
+        // Check if your device supports Google Play
+        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+        // Get the user's ID token
+        const signInResult = await GoogleSignin.signIn();
+        let idToken = signInResult.idToken;
+
+        if (!idToken) {
+            throw new Error('No ID token found');
+        }
+
+        // Create a Google credential with the token
+        const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+        // Sign-in the user with the credential
+        await auth().signInWithCredential(googleCredential);
+
+        // Return success
+        return true;
+    } catch (error) {
+        console.error(error);
+        // Return failure
+        return false;
+    }
+}
+
 
 // Reusable Button Component
 const Button = ({ icon, text, color = '#a4a2a7', onPress }) => (
@@ -71,70 +106,85 @@ const LogoSection = () => (
 );
 
 // Input Fields and Forgot Password Section Component
-const InputFieldsSection = ({ navigation, email, setEmail, password, setPassword }) => (
-    <View>
+const InputFieldsSection = ({ navigation, email, setEmail, password, setPassword, setUser }) => {
+    const handleLogin = async () => {
+            try {
+                const response = await fetch('https://backenddav.onrender.com/iniciarSesion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    setUser(result.user);  // Usar setUser para actualizar el estado del usuario
+                    Alert.alert('Inicio de sesión exitoso', 'Bienvenido ' + result.user.nombre);
+                    navigation.navigate('MainChat'); // Navegamos a la pantalla principal
+                } else {
+                    Alert.alert('Error', result || 'Usuario o contraseña incorrectos');
+                }
+            } catch (error) {
+                Alert.alert('Error', 'No se pudo conectar con el servidor. Por favor, intenta más tarde.');
+                console.error(error);
+            }
+        };
+
+    return (
         <View>
-            <InputField 
-                icon={<Octicons name="mail" size={hp(2.7)} color="gray" />} 
-                placeholder="Correo Electrónico" 
-                value={email}
-                onChangeText={setEmail}
-            />
-            <View style={{ marginTop: hp(2) }}>
-                <InputField 
-                    icon={<Octicons name="lock" size={hp(2.7)} color="gray" />} 
-                    placeholder="Contraseña" 
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
+            <View>
+                <InputField
+                    icon={<Octicons name="mail" size={hp(2.7)} color="gray" />}
+                    placeholder="Correo Electrónico"
+                    value={email}
+                    onChangeText={setEmail}
                 />
+                <View style={{ marginTop: hp(2) }}>
+                    <InputField
+                        icon={<Octicons name="lock" size={hp(2.7)} color="gray" />}
+                        placeholder="Contraseña"
+                        secureTextEntry
+                        value={password}
+                        onChangeText={setPassword}
+                    />
+                </View>
+            </View>
+            <View style={{ alignItems: 'stretch' }}>
+                <Pressable onPress={() => Alert.alert('Reset Password')}>
+                    <Text style={{ fontSize: hp(1.5), fontWeight: '500', textAlign: 'left', color: '#757575', marginTop: hp(2) }}>
+
+                    </Text>
+                </Pressable>
+
+                <View style={{ alignItems: 'flex-end'}}>
+                    <TouchableOpacity
+                        style={{
+                            height: hp(5),
+                            width: wp(20),
+                            backgroundColor: '#a4a2a7',
+                            borderRadius: 17,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            flexDirection: 'row'
+                        }}
+                        onPress={handleLogin}
+                        accessibilityLabel={"Sign In"}
+                    >
+                        <Entypo name="arrow-right" size={30} color="white"/>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
-        <View style={{ alignItems: 'stretch' }}>
-            <Pressable onPress={() => Alert.alert('Reset Password')}>
-                <Text style={{ fontSize: hp(1.5), fontWeight: '500', textAlign: 'left', color: '#757575', marginTop: hp(2) }}>
-                    Forgot password?
-                </Text>
-            </Pressable>
-            
-            <View style={{ alignItems: 'flex-end'}}>
-                <TouchableOpacity
-                    style={{ height: hp(5), width: wp(20), backgroundColor: '#a4a2a7', borderRadius: 17, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}
-                    onPress={() => {Alert.alert('Input Data', `Email: ${email}\nPassword: ${password}`); navigation.navigate('MainChat')}}
-                    accessibilityLabel={"Sign In"}
-                >
-                    <Entypo name="arrow-right" size={30} color="white"/>
-                </TouchableOpacity>
-            </View>
-        </View>
-    </View>
-);
+    );
+};
 
-// Social Media Sign-In Section Component
-const SocialSignInSection = ({ navigation, email, password }) => (
-    <View style={{ paddingTop: hp(10) }}>
-        <Button
-            icon={<FontAwesome5 name="user-alt" size={hp(2.7)} color="white" />}
-            text="Crear Cuenta"
-            onPress={() => {navigation.navigate('SignIn')}}
-        />
-        <Button
-            icon={<Fontisto name="google" size={hp(2.7)} color="white" />}
-            text="Sign In con Google"
-            onPress={() => Alert.alert('Google Sign In')}
-        />
-        <Button
-            icon={<FontAwesome5 name="facebook" size={hp(2.7)} color="white" />}
-            text="Sign In con Facebook"
-            onPress={() => Alert.alert('Facebook Sign In')}
-        />
-    </View>    
-);
+// LogIn Component
+export default function LogInScreen({ route, navigation }) {
+    const { setUser } = route.params; // Acceder a setUser desde route.params
 
-export default function LogIn() {
-    const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
 
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -142,12 +192,13 @@ export default function LogIn() {
             <View style={{ paddingTop: hp(5), paddingHorizontal: wp(5) }}>
                 <LogoSection />
                 <View style={{ paddingHorizontal: wp(12.5), marginTop: hp(2) }}>
-                    <InputFieldsSection 
-                        navigation={navigation} 
-                        email={email} 
-                        setEmail={setEmail} 
-                        password={password} 
-                        setPassword={setPassword} 
+                    <InputFieldsSection
+                        navigation={navigation}
+                        email={email}
+                        setEmail={setEmail}
+                        password={password}
+                        setPassword={setPassword}
+                        setUser={setUser}  // Se pasa la función setUser
                     />
                     <SocialSignInSection navigation={navigation} />
                 </View>
@@ -155,3 +206,34 @@ export default function LogIn() {
         </View>
     );
 }
+
+
+
+// Social Media Sign-In Section Component
+const SocialSignInSection = ({ navigation }) => (
+    <View style={{ paddingTop: hp(10) }}>
+        <Button
+            icon={<FontAwesome5 name="user-alt" size={hp(2.7)} color="white" />}
+            text="Crear Cuenta"
+            onPress={() => navigation.navigate('SignIn')}
+        />
+        <Button
+            icon={<Fontisto name="google" size={hp(2.7)} color="white" />}
+            text="Sign In con Google"
+            onPress={async () => {
+                const isSuccessful = await onGoogleButtonPress();
+                if (isSuccessful) {
+                    navigation.navigate('MainChat');
+                } else {
+                    Alert.alert('Error', 'Inicio de sesión con Google fallido. Intente de nuevo.');
+                }
+            }}
+        />
+
+        <Button
+            icon={<FontAwesome5 name="facebook" size={hp(2.7)} color="white" />}
+            text="Sign In con Facebook"
+            onPress={() => Alert.alert('Facebook Sign In')}
+        />
+    </View>
+);

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Feather from 'react-native-vector-icons/Feather';
@@ -72,47 +71,80 @@ const LogoSection = () => (
 );
 
 // Input Fields Section Component
-const InputFieldsSection = ({ navigation, name, setName, email, setEmail, username, setUsername, password, setPassword }) => (
+const InputFieldsSection = ({ name, setName, email, setEmail, username, setUsername, password, setPassword }) => (
     <View>
-        <View>
-            <InputField icon={<Feather name="user" size={hp(2.7)} color="gray" />} placeholder="Nombre" value={name} onChangeText={setName} />
-            <View style={{ marginTop: hp(2) }}>
-                <InputField icon={<Octicons name="mail" size={hp(2.7)} color="gray" />} placeholder="Correo Electrónico" value={email} onChangeText={setEmail}/>
-            </View>
-            <View style={{ marginTop: hp(2) }}>
-                <InputField icon={<Feather name="at-sign" size={hp(2.7)} color="gray" />} placeholder="Username" value={username} onChangeText={setUsername}/>
-            </View>
-            <View style={{ marginTop: hp(2) }}>
-                <InputField icon={<Octicons name="lock" size={hp(2.7)} color="gray" />} placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword}/>
-            </View>
+        <InputField icon={<Feather name="user" size={hp(2.7)} color="gray" />} placeholder="Nombre" value={name} onChangeText={setName} />
+        <View style={{ marginTop: hp(2) }}>
+            <InputField icon={<Octicons name="mail" size={hp(2.7)} color="gray" />} placeholder="Correo Electrónico" value={email} onChangeText={setEmail} />
+        </View>
+        <View style={{ marginTop: hp(2) }}>
+            <InputField icon={<Feather name="at-sign" size={hp(2.7)} color="gray" />} placeholder="Username" value={username} onChangeText={setUsername} />
+        </View>
+        <View style={{ marginTop: hp(2) }}>
+            <InputField icon={<Octicons name="lock" size={hp(2.7)} color="gray" />} placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
         </View>
     </View>
 );
 
 // Social Media Sign-In Section Component
-const SocialSignInSection = ({ navigation, name, email, username, password }) => (
-    <View style={{ paddingTop: hp(4) }}>
-        <Button
-            // icon={<FontAwesome6 name="user" size={hp(2.7)} color="white" />}
-            icon={<FontAwesome5 name="user-alt" size={hp(2.7)} color="white" />}
-            text="Crear Cuenta"
-            onPress={() => {Alert.alert('Input Data', `Name: ${name}\nEmail: ${email}\nUsername: ${username}\nPassword: ${password}`); navigation.navigate('MainChat')}}
-                    accessibilityLabel={"Sign In"}
-        />
-        <Button
-            icon={<Fontisto name="google" size={hp(2.7)} color="white" />}
-            text="Registrarse con Google"
-            onPress={() => alert('Google Sign Up')}
-        />
-        <Button
-            icon={<FontAwesome5 name="facebook" size={hp(2.7)} color="white" />}
-            text="Registrarse con Facebook"
-            onPress={() => alert('Facebook Sign Up')}
-        />
-    </View>    
-);
+const SocialSignInSection = ({ navigation, name, email, username, password, setUser }) => {
+    const handleSignUp = async () => {
+        try {
+            const response = await fetch('https://backenddav.onrender.com/registrar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nombre: name,
+                    email: email,
+                    nUsuario: username,
+                    password: password,
+                }),
+            });
 
-export default function SignIn() {
+            const result = await response.text();
+
+            if (response.ok) {
+                Alert.alert('¡Registro Exitoso!', result);
+                const user = {
+                    name: name,
+                    email: email,
+                    nUsuario: username,
+                };
+                setUser(user);
+                navigation.navigate('MainChat');
+            } else {
+                Alert.alert('Error en el registro', result);
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un problema al conectar con el servidor');
+            console.error('Error en el registro:', error);
+        }
+    };
+
+    return (
+        <View style={{ paddingTop: hp(4) }}>
+            <Button
+                icon={<FontAwesome5 name="user-alt" size={hp(2.7)} color="white" />}
+                text="Crear Cuenta"
+                onPress={handleSignUp}
+            />
+            <Button
+                icon={<Fontisto name="google" size={hp(2.7)} color="white" />}
+                text="Registrarse con Google"
+                onPress={() => Alert.alert('Google Sign Up', 'Esta funcionalidad aún no está implementada')}
+            />
+            <Button
+                icon={<FontAwesome5 name="facebook" size={hp(2.7)} color="white" />}
+                text="Registrarse con Facebook"
+                onPress={() => Alert.alert('Facebook Sign Up', 'Esta funcionalidad aún no está implementada')}
+            />
+        </View>
+    );
+};
+
+export default function SignIn({ setUser }) {
     const navigation = useNavigation();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -122,11 +154,37 @@ export default function SignIn() {
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             <StatusBar barStyle="default" />
-            <View style={{ paddingTop: hp(5), paddingHorizontal: wp(5) }}>
+            <View style={{ paddingHorizontal: wp(5), paddingTop: hp(2) }}>
+                {/* Back Button */}
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={{ flexDirection: 'row', alignItems: 'center', marginBottom: hp(2) }}
+                >
+                    <FontAwesome5 name="arrow-left" size={hp(2.5)} color="#4a4a4a" />
+                    <Text style={{ marginLeft: wp(2), fontSize: hp(2), color: '#4a4a4a' }}>
+                        Regresar
+                    </Text>
+                </TouchableOpacity>
                 <LogoSection />
                 <View style={{ paddingHorizontal: wp(12.5), marginTop: hp(4) }}>
-                    <InputFieldsSection navigation={navigation} name={name} setName={setName} email={email} setEmail={setEmail} username={username} setUsername={setUsername} password={password} setPassword={setPassword}/>
-                    <SocialSignInSection navigation={navigation} name={name} email={email} username={username} password={password}/>
+                    <InputFieldsSection
+                        name={name}
+                        setName={setName}
+                        email={email}
+                        setEmail={setEmail}
+                        username={username}
+                        setUsername={setUsername}
+                        password={password}
+                        setPassword={setPassword}
+                    />
+                    <SocialSignInSection
+                        navigation={navigation}
+                        name={name}
+                        email={email}
+                        username={username}
+                        password={password}
+                        setUser={setUser}
+                    />
                 </View>
             </View>
         </View>
